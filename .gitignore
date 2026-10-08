@@ -1,0 +1,30 @@
+# ─── Dependencias ────────────────────────────────────────────────────────
+# No se versionan: las descarga npm al ejecutar publicar.bat.
+node_modules/
+
+# ─── Resultados de compilación ───────────────────────────────────────────
+bin/
+obj/
+dist/
+.angular/
+publicado/
+*.dll
+*.exe
+*.pdb
+
+# ─── Archivos locales del entorno de desarrollo ──────────────────────────
+*.user
+appsettings.Development.json
+.vs/
+.vscode/
+.idea/
+
+# ─── Sistema operativo ───────────────────────────────────────────────────
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# ─── Documentos que no se publican ───────────────────────────────────────
+# La carta de entrega se remite por separado para su firma; no forma parte
+# de lo que se consulta en el repositorio.
+04_Cartas/

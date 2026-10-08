@@ -1,0 +1,210 @@
+@use '@angular/material' as mat;
+
+// Paleta de colores corporativa
+$primary-palette: mat.define-palette(mat.$indigo-palette, 800);
+$accent-palette:  mat.define-palette(mat.$blue-palette,   600);
+$warn-palette:    mat.define-palette(mat.$red-palette);
+
+$theme: mat.define-light-theme((
+  color: (
+    primary: $primary-palette,
+    accent:  $accent-palette,
+    warn:    $warn-palette,
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+@include mat.core();
+@include mat.all-component-themes($theme);
+
+// ── Reset y base ──────────────────────────────────────────
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  background: #f5f5f5;
+  color: #212121;
+}
+
+// ── Layout principal ──────────────────────────────────────
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.content-area {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  background: #f5f5f5;
+}
+
+// ── Sidebar ───────────────────────────────────────────────
+// El resto de la apariencia del sidebar (fondo, header, ítems activos)
+// se define en el propio LayoutComponent para evitar reglas duplicadas.
+.sidenav { width: 250px; }
+
+// ── Cards / Contenido ─────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+
+  h1 { margin: 0; font-size: 24px; font-weight: 400; }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+  }
+  .stat-icon {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    mat-icon { font-size: 28px; width: 28px; height: 28px; color: white; }
+  }
+  .stat-info {
+    h2 { margin: 0; font-size: 32px; font-weight: 500; }
+    p  { margin: 0; color: #757575; font-size: 14px; }
+  }
+}
+
+// ── Chips de estado ───────────────────────────────────────
+.estado-chip {
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.Activo       { background: #e8f5e9; color: #2e7d32; }
+  &.Inactivo     { background: #fce4ec; color: #c62828; }
+  &.Mantenimiento{ background: #fff8e1; color: #f57f17; }
+  &.Retirado     { background: #eeeeee; color: #616161; }
+}
+
+// ── Tabla ─────────────────────────────────────────────────
+.table-container {
+  overflow-x: auto;
+  mat-table { width: 100%; }
+}
+
+// ── Formularios ───────────────────────────────────────────
+.form-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  mat-form-field { flex: 1; min-width: 200px; }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+// ── Impresión ─────────────────────────────────────────────
+// Al imprimir se oculta todo el marco de la aplicación (barra superior,
+// menú lateral y desplazamientos) para que en el papel salga únicamente
+// el contenido de la vista, con su propio encabezado de informe.
+@media print {
+
+  // Aquí solo se definen los márgenes. El TAMAÑO Y LA ORIENTACIÓN de la hoja
+  // se dejan deliberadamente sin declarar: dos reglas @page que compiten hacen
+  // que el navegador conserve la orientación de la primera y se limite a girar
+  // el contenido. Las vistas que necesitan una hoja específica inyectan su
+  // propia regla al imprimir (ver ReportesComponent).
+  @page {
+    margin: 1.6cm 1.4cm;
+  }
+
+  html, body {
+    height: auto !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  // Conserva fondos y colores de chips, tarjetas y gráficas.
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  // Marco de la aplicación: fuera del papel.
+  .toolbar,
+  mat-toolbar,
+  mat-sidenav,
+  .mat-drawer,
+  .mat-drawer-backdrop,
+  .no-imprimir {
+    display: none !important;
+  }
+
+  // Contenedores que en pantalla limitan el alto y el desplazamiento:
+  // se liberan para que el informe pueda ocupar varias páginas.
+  .app-container,
+  .content-area,
+  .sidenav-container,
+  .mat-drawer-container,
+  .mat-drawer-content,
+  .main-content {
+    display: block !important;
+    position: static !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    transform: none !important;
+  }
+
+  // Nada de cortes a media tarjeta o a media fila.
+  mat-card,
+  .mat-mdc-card,
+  mat-row,
+  .mat-mdc-row,
+  .stat-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  // mat-table se construye sobre flexbox: forzar display de tabla apila las
+  // celdas del encabezado en una columna. Se preservan las filas tal cual.
+  mat-header-row,
+  .mat-mdc-header-row,
+  mat-row,
+  .mat-mdc-row {
+    display: flex !important;
+    min-height: 0 !important;
+  }
+
+  // Tarjetas sin relieve: en papel el sombreado se vuelve un marco gris sucio.
+  mat-card,
+  .mat-mdc-card {
+    box-shadow: none !important;
+    border: 1px solid #d8dce8 !important;
+  }
+}
